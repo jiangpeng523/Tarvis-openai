@@ -40,20 +40,20 @@ function App() {
 
   return (
     <div className="app">
-    <Button className='send-btn' variant="contained" color="primary" onClick={handleGetModelList}>
+      {/* <Button className='send-btn' variant="contained" color="primary" onClick={handleGetModelList}>
       获取模型列表
     </Button>
 
     <Button className='send-btn' variant="contained" color="primary" onClick={handleSearchModel}>
       检索模型
-    </Button>
+    </Button> */}
       <AppBar position="static">
         <Toolbar>
           OpenAI Demo
         </Toolbar>
       </AppBar>
 
-      {/* <div className="contents">
+      <div className="contents">
         <Paper className='paper'>
           {
             chatList.map((item, index) => {
@@ -73,7 +73,7 @@ function App() {
         <Button className='send-btn' variant="contained" color="primary" onClick={handleSendMessage}>
           发送
         </Button>
-      </div> */}
+      </div>
     </div>
   )
 }
