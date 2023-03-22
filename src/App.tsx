@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button, AppBar, Toolbar, Paper, SnackbarContent } from '@material-ui/core'
 import { sendMessage, getModelList, searchModel } from './apis'
 import './App.css'
@@ -6,6 +6,8 @@ import './App.css'
 function App() {
   const [inputVal, setInputVal] = useState('')
   const [chatList, setChatList] = useState<any[]>([])
+
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleGetModelList = () => {
     getModelList().then(res => {
@@ -35,7 +37,15 @@ function App() {
         ...result,
         ...res
       ])
+
+      handlePlayAudio();
     }, 0)
+  };
+  
+  // 播放音频
+  const handlePlayAudio = () => {
+    console.log(audioRef)
+    audioRef.current?.play();
   };
 
   return (
@@ -53,6 +63,8 @@ function App() {
         </Toolbar>
       </AppBar>
 
+      <audio ref={audioRef} src="../server/audio.wav"></audio>
+
       <div className="contents">
         <Paper className='paper'>
           {
@@ -69,6 +81,10 @@ function App() {
       <div className='footer'>
         <input type="text" value={inputVal} onChange={e => {
           setInputVal(e.target.value)
+        }} onKeyUp={e => {
+          if(e.keyCode === 13) {
+            handleSendMessage()
+          }
         }} />
         <Button className='send-btn' variant="contained" color="primary" onClick={handleSendMessage}>
           发送
