@@ -19,6 +19,8 @@ function App() {
   // 存储录音数据块
   const audioDataRef = useRef<Blob>();
 
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   const handleGetModelList = () => {
     getModelList().then((res) => {
       console.log(res);
@@ -43,7 +45,15 @@ function App() {
     result.concat(res);
     setTimeout(() => {
       setChatList([...result, ...res]);
+
+      handlePlayAudio();
     }, 0);
+  };
+
+  // 播放音频
+  const handlePlayAudio = () => {
+    console.log(audioRef);
+    audioRef.current?.play();
   };
 
   const startRecordVoiceMessage = async () => {
@@ -105,6 +115,8 @@ function App() {
         <Toolbar>OpenAI Demo</Toolbar>
       </AppBar>
 
+      <audio ref={audioRef} src="../server/audio.wav"></audio>
+
       <div className="contents">
         <Paper className="paper">
           {chatList.map((item, index) => {
@@ -127,6 +139,11 @@ function App() {
           value={inputVal}
           onChange={(e) => {
             setInputVal(e.target.value);
+          }}
+          onKeyUp={(e) => {
+            if (e.keyCode === 13) {
+              handleSendMessage();
+            }
           }}
         />
         <Button
