@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, AppBar, Toolbar, Paper, SnackbarContent } from '@material-ui/core'
-import { sendMessage, getModelList, searchModel } from './apis'
+import { sendMessage, completions, edits, images, getModelList, searchModel, getAudio } from './apis'
 import './App.css'
 
 function App() {
   const [inputVal, setInputVal] = useState('')
   const [chatList, setChatList] = useState<any[]>([])
+  const [audioUrl, setAudioUrl] = useState<string>('')
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -32,21 +33,23 @@ function App() {
     setInputVal('')
     const res = await sendMessage(inputVal)
     result.concat(res);
-    setTimeout(() => {
+    setTimeout(async () => {
       setChatList([
         ...result,
         ...res
       ])
 
-      handlePlayAudio();
+      // 播放音频
+      const audioUrl = await getAudio(res[0].content.trim());
+      setAudioUrl(audioUrl);
     }, 0)
   };
-  
-  // 播放音频
-  const handlePlayAudio = () => {
-    console.log(audioRef)
-    audioRef.current?.play();
-  };
+
+  useEffect(() => {
+    if(audioRef.current) {
+      audioRef.current?.play();
+    }
+  }, [audioUrl])
 
   return (
     <div className="app">
@@ -63,7 +66,9 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      <audio ref={audioRef} src="../server/audio.wav"></audio>
+      {
+        audioUrl && <audio ref={audioRef} src={audioUrl}></audio>
+      }
 
       <div className="contents">
         <Paper className='paper'>
@@ -82,7 +87,7 @@ function App() {
         <input type="text" value={inputVal} onChange={e => {
           setInputVal(e.target.value)
         }} onKeyUp={e => {
-          if(e.keyCode === 13) {
+          if (e.keyCode === 13) {
             handleSendMessage()
           }
         }} />
