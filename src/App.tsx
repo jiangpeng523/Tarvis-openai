@@ -41,7 +41,17 @@ function App() {
 
       // 播放音频
       const audioUrl = await getAudio(res[0].content.trim());
-      setAudioUrl(audioUrl);
+      if(audioRef.current) {
+        audioRef.current.setAttribute('src', audioUrl)
+        audioRef.current?.play();
+        // audioRef.current.onload = () => {
+        //   console.log('onload')
+        //   audioRef.current?.play();
+        // };
+        // audioRef.current.onerror = (e) => {
+        //   console.log(e)
+        // };
+      }
     }, 0)
   };
 
@@ -63,12 +73,10 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           OpenAI Demo
+      <audio controls ref={audioRef} autoPlay></audio>
         </Toolbar>
       </AppBar>
 
-      {
-        audioUrl && <audio ref={audioRef} src={audioUrl}></audio>
-      }
 
       <div className="contents">
         <Paper className='paper'>
