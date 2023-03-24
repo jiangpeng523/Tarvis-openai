@@ -45,9 +45,9 @@ function getAuthStr(date) {
 
 // 传输数据
 function send(message) {
-	console.log('当前传入的信息：', message)
+	log.info('当前传入的信息：', message)
 	if (!message) {
-		console.log('没有信息')
+		log.info('没有信息')
 		return
 	}
 	let frame = {
@@ -68,26 +68,29 @@ function send(message) {
 			"status": 2
 		}
 	}
-	console.log('开始发送数据')
+	log.info('开始发送数据')
 	ws.send(JSON.stringify(frame))
 }
 
 // 保存文件
-const save = ((data) => {
+const save = (data, status) => {
 	fs.writeFile('./test.pcm', data, { flag: 'a' }, async (err) => {
 		if (err) {
 			log.error('save error: ' + err)
 			return
 		}
-		console.log('开始转换')
-		await tranform()
-		console.log('转换完成')
-		Emitter.emit('save')
-		log.info('文件保存成功')
-	})
-})
 
-const connect = () => {
+		if (status === 2) {
+			log.info('文件保存成功')
+			log.info('开始转换')
+			const audioFileName = await tranform()
+			log.info('转换完成')
+			Emitter.emit('save', { audioFileName })
+		}
+	})
+}
+
+const connect = (msg) => {
 	// 获取当前时间 RFC1123格式
 	let date = (new Date().toUTCString())
 	// 设置当前临时状态为初始化
@@ -98,6 +101,7 @@ const connect = () => {
 	// 连接建立完毕，读取数据进行识别
 	ws.on('open', () => {
 		log.info("websocket connect!")
+		send(msg)
 		// 如果之前保存过音频文件，删除之
 		if (fs.existsSync('./test.pcm')) {
 			fs.unlink('./test.pcm', (err) => {
@@ -125,10 +129,13 @@ const connect = () => {
 		let audio = res.data.audio
 		let audioBuf = Buffer.from(audio, 'base64')
 
-		save(audioBuf)
+		log.info("触发保存：", audioBuf.length, "字节")
+		log.info("当前状态：", res.data.status)
+
+		save(audioBuf, res.data.status)
 
 		if (res.code == 0 && res.data.status == 2) {
-			ws.close()
+			// ws.close()
 		}
 	})
 
@@ -142,6 +149,16 @@ const connect = () => {
 		log.error("websocket connect err: " + err)
 	})
 };
+
+function test () {
+	connect()
+
+	setTimeout(() => {
+		send('你好！ 有什么我可以帮你的吗？')
+	}, 2000)
+}
+
+// test()
 
 
 module.exports = {

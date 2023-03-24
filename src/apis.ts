@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 
 const config: AxiosRequestConfig = {
   headers: {
-    Authorization: 'Bearer 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',
+    Authorization: 'Bearer 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',
     "Content-Type": 'application/json'
   }
 }
