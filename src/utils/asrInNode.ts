@@ -68,16 +68,13 @@ function getAuthStr(date: string) {
 }
 
 // 传输数据
-function send(data, isBase64, currentStatus: 0 | 1 | 2) {
-  let frame = '';
-  status = currentStatus;
+function send(data: string, currentStatus: 0 | 1 | 2) {
+  let frame = {};
   let frameDataSection = {
-    status: status,
     format: 'audio/L16;rate=16000',
-    audio: isBase64 ? data : data.toString('base64'),
     encoding: 'raw',
   };
-  switch (status) {
+  switch (currentStatus) {
     case FRAME.STATUS_FIRST_FRAME:
       frame = {
         // 填充common
@@ -90,17 +87,36 @@ function send(data, isBase64, currentStatus: 0 | 1 | 2) {
           domain: 'iat',
           accent: 'mandarin',
           dwa: 'wpgs', // 可选参数，动态修正
+          sample_rate: "16000",
+          vad_eos: 5000,
         },
         //填充data
-        data: frameDataSection,
+        data: {
+          ...frameDataSection,
+          audio: '',
+          status: 0,
+        },
       };
-      status = FRAME.STATUS_CONTINUE_FRAME;
+      // status = FRAME.STATUS_CONTINUE_FRAME;
       break;
     case FRAME.STATUS_CONTINUE_FRAME:
+      frame = {
+        //填充data
+        data: {
+          ...frameDataSection,
+          audio: "QAi6CKMJ4gnWCR4KKQp8ClYKhwkHCKoGXAXXA7wCNwFr/+/9Ov2d/KX7X/w3/aH9m/7q/pz9Af2L/P/8CP4h/YT8KvyE+wL7bfnR9wP3lfWj9SP3SPcG+Dr4Bfjy+Gn7Pf2w/70A1/8y/hH9nPzI/Cv9AfwX+8/4kfa39wr5Z/mP+er4/vcD+eT5O/pA+4P7vvmy+KD48vic+cr5Pfo7+Vv3X/eo+AT6mPp+/Mb9mP5D/zAA/AIkBoMHsQfjCPgIJgj1B+4HMQidB1oFHAT9AucB7AEfAscCngKbAFz/Ov9X/wsA4AC0AJz///4+/4YA+QGjAWoBFQIoAWYAlQFkAnsCHQJOAloDbgQGBYIFGgUnBCEDrwF/AMAACv/R/Bj8uvvq+qL6wfrP+Un5jPnC+oH8kf10/ob+Zv6L/af8n/wO/Iv7ffsU/J78bPxR/If9f/8kAJ4AbQE/AcIBFALAAeUBwAFrAGj/Nv+E/lP+r/6b/gf9mfv7+7H+9QA6A6ADOgRBBcsF+AaNCOAIygfdBjUGGgVQBPUCXgHw/3L9wPuT+8n7+Puu/Ez+1P7s/1UBYgKPA6MEJQUwBZEEtQIVARoBfgD9/yn/8/2L/PL7bPwm/soAsQFfAWUBoAHcAtcEMAb6BRYFdQP8ARcChQFMAFv/Bv4H/Kf7G/wT/S3+j/6h/Sj9qv7uALEC0QPTA/UCSQLUAVoAiP5N/WH8W/si+lP5Tfk0+hL8Gf1b/UD9gvzv/DX+Kf9e/4L+Bf5Z/Rf+5f4jABkBJwHaAXkC/wMCBs0Hdwh1B4AGwQULBbAEnAQdA9oAfP4D/aH8CP2v/Er83foq+qP6E/yH/fr/OQFAARICUgLzAxUGbQfCB6wHUQZEBd4F+wW3BRQG7QUcBSYEwQMGBBQF8QXtBLMDxAIJAs4C3QIvAooBy/6D/Mz7Svzu/LX8HPzR+uP45PcF9+32ZvdS98L1wvS19Jz1s/cM+qb7/vt6+1n79vuH/Yz+Zv+S/qX8R/u5+5T8EP1L/lr/EP+c/fH8av56AH4BvQFqARoBDAHdAawDrATyBBIEXQKEAcoAVwAWAGj/VP3O+hj6RvoK+yD9Lv9SABMBNAIGBCAGrwfgB+IH/QZhBR4E7wOYA6YCGAG0/xH/+f5B/xgALACx/0z/SgBaAQ0BzP+X/t392f2H/Xz9o/1p/H367Pm7+pD7Hfxk/S//iQAAAvUDnQQHBxUJ9wkLCtMJYAmEB/oFSgUIBCACfP+e/Tn8BPz3/RMAcQFzAnkDdgQoBh8IPgmPCEEGRAOaAMf/HAB6ADYA3v0Z+wr6k/op/K39sf0v/In6hPoe/AH/MgIqBDQEVANUAnECdAOxA5MCyAA5/mf8j/u8++H8Bf4m/bj89vxj/cD+HAAjAB//Q/38+8j7Y/tg+7r6ifmZ+Cf4cfg7+Z76Svuk+8f7y/uQ/XT/HQCeAOAAOAHhAZAC3QK8AjECEAHiAC4B3wGDAVcBFwGOAL4AjgHpAmoEAAVjBPkCMwIbAhECuwFiAMX+8PxE+7f66/tb/P77iPuN+/P7av0E/7AAWQKiAlICGwLJAqQDzwS/BIgDJQLjAVMCxgN4BHQE9QK/ADX/SP5Z/vz9V/2p/O77tvvr/Dn+s/90AE4AT/8F/z//0/9LADAA7P8a/27+Yf5p/wcBNALeAV4BaAFmAkQEXQV4Bu0GXAY3BVUFfQU=",
+          status: 1,
+        },
+      };
+      break;
     case FRAME.STATUS_LAST_FRAME:
       //填充frame
       frame = {
-        data: frameDataSection,
+        data: {
+          ...frameDataSection,
+          status: 2,
+          audio: '',
+        },
       };
       break;
   }

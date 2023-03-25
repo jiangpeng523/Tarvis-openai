@@ -16,7 +16,8 @@ import {
   getAudio,
 } from './apis';
 import './App.css';
-import { initWs, send, blobToBase64 } from './utils/asrInNode';
+// import { initWs, send, blobToBase64 } from './utils/asrInNode';
+import test from './utils/iat.js';
 
 function App() {
   const [inputVal, setInputVal] = useState('');
@@ -110,19 +111,23 @@ function App() {
     const audio = new Audio(URL.createObjectURL(audioDataRef.current));
     // 播放音频
     audio.play();
-    blobToBase64(audioDataRef.current, (data) => {
-      send(data, true, 0);
-      send('', false, 2);
-    });
+    // blobToBase64(audioDataRef.current, (data: string) => {
+    //   send('', 0);
+    //   send(data, 1);
+    //   send('', 2);
+    // });
   };
 
   useEffect(() => {
-    initWs({
-      onOpen: () => {},
-      onMessage: () => {},
-      onClose: () => {},
-      onError: () => {},
-    });
+    // initWs({
+    //   onOpen: () => {},
+    //   onMessage: () => {},
+    //   onClose: () => {},
+    //   onError: () => {},
+    // });
+    // test((text: string) => {
+    //   setInputVal(text);
+    // });
   }, []);
 
   useEffect(() => {
@@ -166,6 +171,7 @@ function App() {
       <div className="footer">
         <input
           type="text"
+          id="result_output"
           value={inputVal}
           onChange={(e) => {
             setInputVal(e.target.value);
@@ -181,7 +187,12 @@ function App() {
           className="send-btn"
           variant="contained"
           color="primary"
-          onClick={startRecordVoiceMessage}
+          onClick={() => {
+            // startRecordVoiceMessage
+            test((text: string) => {
+              setInputVal(text);
+            });
+          }}
         >
           开始录音
         </Button>
