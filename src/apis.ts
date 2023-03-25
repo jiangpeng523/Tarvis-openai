@@ -47,9 +47,19 @@ import axios, { AxiosRequestConfig } from "axios";
 
 const config: AxiosRequestConfig = {
   headers: {
-    Authorization: 'Bearer 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',
+    Authorization: 'Bearer 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',
     "Content-Type": 'application/json'
   }
+}
+
+// 生成音频
+export const getAudio = async (msg: string) => {
+  const res = await axios.get('http://localhost:3333/audio', {
+    params: {
+      message: msg
+    }
+  });
+  return res.data.data;
 }
 
 // 发送消息
@@ -80,4 +90,35 @@ export const getModelList = async () => {
 export const searchModel = async (model: string) => {
   const res = await axios.get(`https://service-g47odsm8-1307912760.hk.apigw.tencentcs.com/v1/models/${model}`, config)
   return res.data
+}
+
+// completions Api
+export const completions = async (msg: string) => {
+  const res = await axios.post('https://service-g47odsm8-1307912760.hk.apigw.tencentcs.com/v1/completions', {
+    "model": "text-davinci-003",
+    "prompt": msg,
+  }, config)
+
+  return res.data;
+}
+
+// edits Api
+export const edits = async (msg: string) => {
+  const res = await axios.post('https://service-g47odsm8-1307912760.hk.apigw.tencentcs.com/v1/edits', {
+    "model": "text-davinci-edit-001",
+    input: msg,
+    instruction: "翻译成英文"
+  }, config)
+
+  return res.data;
+}
+
+// images Api
+export const images = async (msg: string) => {
+  const res = await axios.post('https://service-g47odsm8-1307912760.hk.apigw.tencentcs.com/v1/images/generations', {
+    "prompt": msg,
+    size: '256x256'
+  }, config)
+
+  return res.data;
 }

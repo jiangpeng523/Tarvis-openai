@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Button,
   AppBar,
@@ -6,12 +6,21 @@ import {
   Paper,
   SnackbarContent,
 } from '@material-ui/core';
-import { sendMessage, getModelList, searchModel } from './apis';
+import {
+  sendMessage,
+  completions,
+  edits,
+  images,
+  getModelList,
+  searchModel,
+  getAudio,
+} from './apis';
 import './App.css';
 
 function App() {
   const [inputVal, setInputVal] = useState('');
   const [chatList, setChatList] = useState<any[]>([]);
+  const [audioUrl, setAudioUrl] = useState<string>('');
 
   const [isRecord, setIsRecord] = useState(false);
   // 存放 MediaRecoder
@@ -102,6 +111,12 @@ function App() {
     audio.play();
   };
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current?.play();
+    }
+  }, [audioUrl]);
+
   return (
     <div className="app">
       {/* <Button className='send-btn' variant="contained" color="primary" onClick={handleGetModelList}>
@@ -112,10 +127,11 @@ function App() {
       检索模型
     </Button> */}
       <AppBar position="static">
-        <Toolbar>OpenAI Demo</Toolbar>
+        <Toolbar>
+          OpenAI Demo
+          <audio controls ref={audioRef} autoPlay></audio>
+        </Toolbar>
       </AppBar>
-
-      <audio ref={audioRef} src="../server/audio.wav"></audio>
 
       <div className="contents">
         <Paper className="paper">
