@@ -16,6 +16,7 @@ import {
   getAudio,
 } from './apis';
 import './App.css';
+import { initWs, send, blobToBase64 } from './utils/asrInNode';
 
 function App() {
   const [inputVal, setInputVal] = useState('');
@@ -62,7 +63,7 @@ function App() {
   // 播放音频
   const handlePlayAudio = () => {
     console.log(audioRef);
-    audioRef.current?.play();
+    // audioRef.current?.play();
   };
 
   const startRecordVoiceMessage = async () => {
@@ -109,11 +110,24 @@ function App() {
     const audio = new Audio(URL.createObjectURL(audioDataRef.current));
     // 播放音频
     audio.play();
+    blobToBase64(audioDataRef.current, (data) => {
+      send(data, true, 0);
+      send('', false, 2);
+    });
   };
 
   useEffect(() => {
+    initWs({
+      onOpen: () => {},
+      onMessage: () => {},
+      onClose: () => {},
+      onError: () => {},
+    });
+  }, []);
+
+  useEffect(() => {
     if (audioRef.current) {
-      audioRef.current?.play();
+      // audioRef.current?.play();
     }
   }, [audioUrl]);
 
